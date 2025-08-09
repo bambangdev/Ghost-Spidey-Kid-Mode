@@ -59,6 +59,7 @@ export default function App() {
   const [pinTry, setPinTry] = useState('')
   const confettiRef = useRef<HTMLCanvasElement>(null)
   const [audCtx, setAudCtx] = useState<AudioContext | null>(null)
+  const [currentTab, setCurrentTab] = useState<'stars' | 'quick' | 'rewards'>('stars')
 
   useEffect(() => { setAudCtx(new (window.AudioContext || (window as any).webkitAudioContext)()) }, [])
 
@@ -226,47 +227,55 @@ export default function App() {
           </div>
         </header>
 
-        <section className="card center">
-          <div className="muted">Menuju hadiah berikutnya:</div>
-          <div style={{fontSize:20,fontWeight:900,margin:'6px 0'}}>
-            {state.rewards.length ? (nx.need>0 ? `${nx.need} lagi untuk ${nx.label}` : `Bisa tukar: ${nx.label}!`) : 'Tambahkan hadiah di Mode Orang Tua'}
-          </div>
-          <div style={{height:16, background:'#fff', border:'2px solid var(--p200)', borderRadius:999, overflow:'hidden', maxWidth:700, margin:'0 auto'}}>
-            <div style={{height:'100%', width:`${nx.pct}%`, background:'linear-gradient(90deg,var(--pink),var(--fuchsia))'}}></div>
-          </div>
-        </section>
+        <nav className="tabs no-print">
+          <button className={currentTab==='stars'?'active':''} onClick={()=>setCurrentTab('stars')}>Bintang</button>
+          <button className={currentTab==='quick'?'active':''} onClick={()=>setCurrentTab('quick')}>Aksi Cepat</button>
+          <button className={currentTab==='rewards'?'active':''} onClick={()=>setCurrentTab('rewards')}>Hadiah</button>
+        </nav>
 
-        <section className="row row--3 no-print">
-          <button className="big-btn" onClick={()=>{ addStars(1); pushAction('⭐ Tambah Bintang',1); sfxAdd() }}>
-            <div className="emoji">⭐</div><div>Tambah Bintang</div>
-          </button>
-          <button className="big-btn" onClick={()=>document.getElementById('quick')?.scrollIntoView({behavior:'smooth'})}>
-            <div className="emoji">🧹📖🙏</div><div>Aksi Cepat</div>
-          </button>
-          <button className="big-btn" onClick={()=>document.getElementById('redeem')?.scrollIntoView({behavior:'smooth'})}>
-            <div className="emoji">🎁</div><div>Tukar Hadiah</div>
-          </button>
-        </section>
+        {currentTab === 'stars' && (
+          <>
+            <section className="card center">
+              <div className="muted">Menuju hadiah berikutnya:</div>
+              <div style={{fontSize:20,fontWeight:900,margin:'6px 0'}}>
+                {state.rewards.length ? (nx.need>0 ? `${nx.need} lagi untuk ${nx.label}` : `Bisa tukar: ${nx.label}!`) : 'Tambahkan hadiah di Mode Orang Tua'}
+              </div>
+              <div style={{height:16, background:'#fff', border:'2px solid var(--p200)', borderRadius:999, overflow:'hidden', maxWidth:700, margin:'0 auto'}}>
+                <div style={{height:'100%', width:`${nx.pct}%`, background:'linear-gradient(90deg,var(--pink),var(--fuchsia))'}}></div>
+              </div>
+            </section>
 
-        <section className="card">
-          <StarGrid />
-        </section>
+            <section className="row no-print" style={{marginTop:12}}>
+              <button className="big-btn" onClick={()=>{ addStars(1); pushAction('⭐ Tambah Bintang',1); sfxAdd() }}>
+                <div className="emoji">⭐</div><div>Tambah Bintang</div>
+              </button>
+            </section>
 
-        <section className="card" id="quick">
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-            <b>Aksi Cepat</b>
-            <span className="small muted">Orang tua bisa edit di Mode Orang Tua</span>
-          </div>
-          <QuickGrid />
-        </section>
+            <section className="card" style={{marginTop:12}}>
+              <StarGrid />
+            </section>
+          </>
+        )}
 
-        <section className="card" id="redeem">
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-            <b>Hadiah</b>
-            <span className="small muted">Atur di Mode Orang Tua</span>
-          </div>
-          <RedeemList />
-        </section>
+        {currentTab === 'quick' && (
+          <section className="card" style={{marginTop:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <b>Aksi Cepat</b>
+              <span className="small muted">Orang tua bisa edit di Mode Orang Tua</span>
+            </div>
+            <QuickGrid />
+          </section>
+        )}
+
+        {currentTab === 'rewards' && (
+          <section className="card" style={{marginTop:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <b>Hadiah</b>
+              <span className="small muted">Atur di Mode Orang Tua</span>
+            </div>
+            <RedeemList />
+          </section>
+        )}
 
         {/* Parent Modal */}
         {parentOpen && (
