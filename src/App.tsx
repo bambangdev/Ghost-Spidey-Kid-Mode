@@ -108,7 +108,9 @@ export default function App() {
   const totalEarned = useMemo(() => state.actions.reduce((s,a)=>s+a.stars,0), [state.actions])
   const totalSpent = useMemo(() => state.redemptions.reduce((s,r)=>s+r.cost,0), [state.redemptions])
 
-  function save(patch: Partial<State>) { setState({ ...state, ...patch }) }
+  function save(patch: Partial<State>) {
+    setState(prev => ({ ...prev, ...patch }))
+  }
   function addStars(n: number){
     save({ child: { ...state.child, stars: Math.max(0, state.child.stars + n) } })
   }
